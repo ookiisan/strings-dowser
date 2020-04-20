@@ -1,0 +1,6 @@
+[gs]
+api-key-file = <path-to-api-key-file>
+strings-sheet-url = <google-sheet-url>
+strings-sheet-index = <index-of-strings-sheet>
+strings-column-index = <index-of-strings-sheet>
+ground-directory= <root-dir-to-scan>
