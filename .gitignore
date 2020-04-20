@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/conf/strings-dowser-1d0029fb2297.json
+/conf/configuration.ini
+.idea
