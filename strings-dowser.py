@@ -14,28 +14,32 @@ class StringsDowser:
         self.conf_path = os.path.join(curr_dir, 'conf')
         self.config.read(self.conf_path + os.path.sep + 'configuration.ini')
 
-        # Read from general section
-        self.strings_sheet_url = self.config.get('general', 'strings-sheet-url')
-        self.api_key_file = self.config.get('general', 'api-key-file')
-        self.strings_sheet_index = self.config.get('general', 'strings-sheet-index')
-        self.strings_column_index = self.config.get('general', 'strings-column-index')
-        self.ground_directory = self.config.get('general', 'ground-directory')
+        # Read from local_ground section
+        self.strings_sheet_url = self.config.get('local_ground', 'strings-sheet-url')
+        self.api_key_file = self.config.get('local_ground', 'api-key-file')
+        self.strings_sheet_index = self.config.get('local_ground', 'strings-sheet-index')
+        self.strings_column_index = self.config.get('local_ground', 'strings-column-index')
+        self.ground_directory = self.config.get('local_ground', 'ground-directory')
+        self.water_extensions = self.config.get('local_ground', 'water-extensions')
+        self.local_ground_scope = ['https://spreadsheets.google.com/feeds',
+                                   'https://www.googleapis.com/auth/drive']
+        self.local_ground_gs_credentials = ServiceAccountCredentials.from_json_keyfile_name(self.api_key_file,
+                                                                                            self.local_ground_scope)
 
-        self.scope = ['https://spreadsheets.google.com/feeds',
-                      'https://www.googleapis.com/auth/drive']
+    '''Given a list of strings read from an input Google Spreadsheet, looks for these in a local directory with 
+    respect to water_extensions. '''
 
-        self.credentials = ServiceAccountCredentials.from_json_keyfile_name(self.api_key_file, self.scope)
+    def divining_ground_water(self):
+        gc = gspread.authorize(self.local_ground_gs_credentials)
 
-    def write_from_multiproperties(self):
-        gc = gspread.authorize(self.credentials)
-
-        if self.credentials.access_token_expired:
+        if self.local_ground_gs_credentials.access_token_expired:
             # refreshes the token
             gc.login()
 
-        target_sheet = gc.open_by_url(self.strings_sheet_url)
-        worksheet = target_sheet.get_worksheet(int(self.strings_sheet_index))
-        strings_list = worksheet.col_values(int(self.strings_column_index)+1) # column index is 1-based
+        source_sheet = gc.open_by_url(self.strings_sheet_url)
+        worksheet = source_sheet.get_worksheet(int(self.strings_sheet_index))
+        strings_list = worksheet.col_values(int(self.strings_column_index) + 1)  # column index is 1-based
+        extensions = [ext.strip() for ext in self.water_extensions.split(',')]
 
         # Get the list of all files in directory tree at given path
         list_of_files = self.get_list_of_files(self.ground_directory)
@@ -45,7 +49,7 @@ class StringsDowser:
 
         for file in list_of_files:
             name, ext = os.path.splitext(file)
-            if ext in ['.java','.jsp','.js']:
+            if ext in extensions:
                 with open(file) as curr_file:
                     try:
                         content = curr_file.read()
@@ -61,18 +65,11 @@ class StringsDowser:
         for not_found in strings_list:
             if not_found not in occurrences:
                 print(not_found)
-    """
-        @staticmethod
-        def next_available_row(worksheet):
-            str_list = list(filter(None, worksheet.col_values(1)))
-            return len(str_list) + 1
-    """
-
-
 
     '''
         For the given path, get the list of all files in the directory tree
     '''
+
     def get_list_of_files(self, dir_name):
         # create a list of file and sub directories
         # names in the given directory
@@ -89,7 +86,7 @@ class StringsDowser:
                 all_files.append(full_path)
         return all_files
 
-    """ B-plan
+    """ B-plan?
         
         for root, dirs, files in os.walk("/mydir"):
         for file in files:
@@ -97,5 +94,6 @@ class StringsDowser:
              print(os.path.join(root, file))
     """
 
+
 dowser = StringsDowser()
-dowser.write_from_multiproperties()
+dowser.divining_ground_water()
