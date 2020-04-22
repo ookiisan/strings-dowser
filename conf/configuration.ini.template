@@ -1,7 +1,10 @@
-[local_ground]
+[water_definition]
 api-key-file = <path-to-api-key-file>
 strings-sheet-url = <google-sheet-url>
 strings-sheet-index = <index-of-strings-sheet>
 strings-column-index = <index-of-strings-sheet>
-ground-directory = <root-dir-to-scan>
+water-file = <file-containing-input-strings> # alternative to previous Google Sheet parameters
 water-extensions = <list-of-interesting-extensions>  # e.g. .py,.html,.js
+
+[local_ground]
+ground-directory = <root-dir-to-scan>
