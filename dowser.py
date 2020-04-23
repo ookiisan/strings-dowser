@@ -15,8 +15,8 @@ class StringsDowser:
         self.curr_dir = Path(__file__).parent.resolve()
         # this is enough to tells how to define water and divine it
         self.config.read((self.curr_dir / 'test/conf' / 'configuration.ini').resolve())
-        self.water_extensions = self.config.get('water_definition', 'water-extensions')
-        self.extensions = [ext.strip() for ext in self.water_extensions.split(',')]
+        water_extensions = self.config.get('water_definition', 'water-extensions')
+        self.extensions = [ext.strip() for ext in water_extensions.split(',')]
 
     def define_water(self):
         """Tries to define which kind of water needs to be divined. Two types of water available at
@@ -82,7 +82,7 @@ class StringsDowser:
 
         for file in input_files:
             ext = os.path.splitext(file)
-            if ext in self.extensions:
+            if ext[1] in self.extensions:
                 with open(file) as curr_file:
                     try:
                         content = curr_file.read()
