@@ -5,6 +5,9 @@ app = Flask(__name__)
 
 
 @app.route('/')
+def ready():
+    return "Flask server is ready!"
+
 @app.route('/divine')
 def divine():
     sd = dowser.StringsDowser()
@@ -14,4 +17,4 @@ def divine():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=80, debug=True)
